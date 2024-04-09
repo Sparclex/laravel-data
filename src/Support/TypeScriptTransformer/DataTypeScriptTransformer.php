@@ -133,9 +133,24 @@ class DataTypeScriptTransformer extends DtoTransformer
             default => new Compound([new String_(), new Integer()]),
         };
 
+        $classes = explode('|', $class);
+        $keyType = $keyType instanceof Integer ? null : $keyType;
+
+        if(count($classes) === 1) {
+            return new Array_(
+                new Object_(new Fqsen("\\{$class}")),
+                $keyType,
+            );
+        }
+
         return new Array_(
-            new Object_(new Fqsen("\\{$class}")),
-            $keyType
+            new Compound(
+                array_map(
+                    fn($class) => new Object_(new Fqsen("\\{$class}")),
+                    $classes,
+                ),
+            ),
+            $keyType,
         );
     }
 

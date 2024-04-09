@@ -136,16 +136,24 @@ class DataIterableAnnotationReader
         string $class
     ): array {
         if (str_contains($class, '|')) {
+            $resolvedDataClasses = [];
             $possibleNonDataType = null;
 
             foreach (explode('|', $class) as $explodedClass) {
                 $resolvedTuple = $this->resolveDataClass($reflection, $explodedClass);
 
                 if ($resolvedTuple['isData']) {
-                    return $resolvedTuple;
+                    $resolvedDataClasses[] = $resolvedTuple['type'];
                 }
 
                 $possibleNonDataType = $resolvedTuple['type'];
+            }
+
+            if($resolvedDataClasses !== []) {
+                return [
+                    'type' => implode('|', $resolvedDataClasses),
+                    'isData' => true,
+                ];
             }
 
             return [
